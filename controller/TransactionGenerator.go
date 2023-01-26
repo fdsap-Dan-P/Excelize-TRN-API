@@ -270,6 +270,7 @@ func GetPathFunc(c *fiber.Ctx) error {
 	///      F I L E   P A T H     ///
 	/////////////////////////////////
 
+	fmt.Println("TRY 2nd Commit")
 	// filepath.Dir()
 
 	//////////////////////////////////
