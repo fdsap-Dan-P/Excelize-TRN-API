@@ -1,0 +1,257 @@
+basePath: /api/
+definitions:
+  request.InstiCodeRequest:
+    properties:
+      insti_code:
+        example: 100
+        type: integer
+    type: object
+  response.DashboardMenuResponse:
+    properties:
+      dashboard:
+        type: string
+      description:
+        type: string
+      enable:
+        type: integer
+      icon:
+        type: integer
+      insti_code:
+        type: integer
+      menu_item:
+        type: string
+      order:
+        type: integer
+      soon:
+        type: integer
+    type: object
+  response.GetCellValuePath:
+    properties:
+      path:
+        type: string
+    type: object
+  response.GetParamResponse:
+    properties:
+      param_id:
+        type: integer
+      param_name:
+        type: string
+      param_value:
+        type: string
+    type: object
+  response.InstiParam:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      insti_code:
+        type: integer
+      institution:
+        type: string
+      telephone_number:
+        type: string
+    type: object
+  response.ResponseModel:
+    properties:
+      data: {}
+      message:
+        type: string
+      retCode:
+        type: string
+    type: object
+  response.SplashScreenResponse:
+    properties:
+      action:
+        type: string
+      created_date:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      last_updated_by:
+        type: integer
+      last_updated_date:
+        type: string
+      message:
+        type: string
+      redirect_link:
+        type: string
+      show:
+        type: string
+      sub_message:
+        type: string
+      title:
+        type: string
+    type: object
+  response.TransactionResponse:
+    properties:
+      got_agent_fee:
+        type: string
+      got_amount:
+        type: string
+      got_bank_fee:
+        type: string
+      got_cid:
+        type: string
+      got_date:
+        type: string
+      got_iid:
+        type: string
+      got_particular:
+        type: string
+      got_reference:
+        type: string
+      got_source_account:
+        type: string
+      got_standing:
+        type: string
+      got_target:
+        type: string
+      got_time:
+        type: string
+      got_total_fee:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact:
+    name: FDSAP Support
+  description: FDSAP swagger template
+  title: Fiber Example API
+  version: "1.0"
+paths:
+  /public/v1/dashboard/dashboardMenu:
+    post:
+      consumes:
+      - application/json
+      description: Provide the menu to show in kPLUS
+      parameters:
+      - description: Insti Code
+        in: body
+        name: getInstiCode
+        required: true
+        schema:
+          $ref: '#/definitions/request.InstiCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DashboardMenuResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      summary: DASHBOARD-MENU
+      tags:
+      - DASHBOARD
+  /public/v1/kplus/get_param:
+    get:
+      description: Provide the data FROM getParam TABLE that will be used by kPLUS
+        upon opening the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.InstiParam'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      summary: API FOR GET PARAM
+      tags:
+      - kPLUS UPON OPEN
+  /public/v1/kplus/insti_param:
+    get:
+      description: Provide the data FROM insti_param TABLE that will be used by kPLUS
+        upon opening the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.InstiParam'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      summary: API FOR INSTI PARAM
+      tags:
+      - kPLUS UPON OPEN
+  /public/v1/kplus/kplus_upon_open:
+    get:
+      description: Provide the data that will be used by kPLUS upon opening the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetParamResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      summary: kPLUS UPON OPEN
+      tags:
+      - kPLUS UPON OPEN
+  /public/v1/kplus/splash_screen:
+    get:
+      description: Provide the data FROM c_splash_screen TABLE that will be used by
+        kPLUS upon opening the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SplashScreenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      summary: API FOR SPLASH SCREEN
+      tags:
+      - kPLUS UPON OPEN
+  /public/v1/transaction/fetch_transaction:
+    post:
+      description: Provides Excel File Report of Transaction in a certain range of
+        date
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TransactionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      summary: API TRANSACTION GENERATION
+      tags:
+      - JANUS REPORT GENERATION
+  /public/v1/transaction/get_path:
+    get:
+      description: Excel File Path Getter To Save into the Database when it was Downloaded
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetCellValuePath'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      summary: API TRANSACTION GENERATION FILE PATH GETTER
+      tags:
+      - JANUS REPORT GENERATION
+swagger: "2.0"
