@@ -260,32 +260,26 @@ func GetPathFunc(c *fiber.Ctx) error {
 		})
 	}
 
-	c.SendFile("Excelize.xlsx", true)
-	// dl := c.Download("http://www.africau.edu/images/default/sample.pdf", "download_Excelize.xlsx")
+	// sample link: "http://www.africau.edu/images/default/sample.pdf
 	// fmt.Println("DOWNLOAD: ", dl)
-	path := c.Path("Excelize.xlsx")
-	fmt.Println(path)
 
 	///////////////////////////////////
 	///      F I L E   P A T H     ///
 	/////////////////////////////////
 
-	fmt.Println("TRY 2nd Commit")
-	// filepath.Dir()
-
 	//////////////////////////////////
 	///       D O W N L O A D     ///
 	////////////////////////////////
 
-	response, err := http.Get("www.africau.edu/images/default/sample.pdf")
-
+	// response, err := http.Get("www.africau.edu/images/default/sample.pdf")
+	response, err := http.Get("https://raw.githubusercontent.com/fdsap-Dan-P/Excelize-TRN-API/master/Excelize.xlsx")
 	if err != nil {
 		return err
 	}
 
 	defer response.Body.Close()
 
-	file, err := os.Create("newCsv.csv")
+	file, err := os.Create("newXLSX.xlsx")
 
 	if err != nil {
 		return err
