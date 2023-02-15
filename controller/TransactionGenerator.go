@@ -42,7 +42,7 @@ func TransactionCount(c *fiber.Ctx) error {
 		})
 	}
 
-	if fetchErr := database.DBConn.Debug().Table("excel_formula").Select("formula").Where("formula_use = 'path_getter'").Find(&pathGetter).Error; fetchErr != nil {
+	if fetchErr := database.DBConn.Debug().Raw("SELECT formula WHERE formula_use = 'path_getter'").Scan(&pathGetter).Error; fetchErr != nil {
 		return c.JSON(response.ResponseModel{
 			RetCode: "400",
 			Message: "can't fetch table",
