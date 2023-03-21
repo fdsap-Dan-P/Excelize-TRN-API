@@ -24,7 +24,6 @@ import (
 func TransactionCount(c *fiber.Ctx) error {
 	getTransactionResult := []response.TransactionResponse{}
 	getUserInput := request.TransactionRequest{}
-	pathGetter := response.FormulaFromDB{}
 
 	if parsErr := c.BodyParser(&getUserInput); parsErr != nil {
 		return c.JSON(response.ResponseModel{
@@ -42,13 +41,13 @@ func TransactionCount(c *fiber.Ctx) error {
 		})
 	}
 
-	if fetchErr := database.DBConn.Debug().Raw("SELECT formula WHERE formula_use = 'path_getter'").Scan(&pathGetter).Error; fetchErr != nil {
-		return c.JSON(response.ResponseModel{
-			RetCode: "400",
-			Message: "can't fetch table",
-			Data:    fetchErr,
-		})
-	}
+	// if fetchErr := database.DBConn.Debug().Raw("SELECT formula FROM excel_formula WHERE formula_use = 'path_getter'").Scan(&pathGetter).Error; fetchErr != nil {
+	// 	return c.JSON(response.ResponseModel{
+	// 		RetCode: "400",
+	// 		Message: "can't fetch table",
+	// 		Data:    fetchErr,
+	// 	})
+	// }
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///                         E X C E L I Z E   -   S H E E T   1                        ///
@@ -163,35 +162,6 @@ func TransactionCount(c *fiber.Ctx) error {
 		fmt.Println("------------------------------------")
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////
-	/////                           S H E E T    # 2                                /////
-	////////////////////////////////////////////////////////////////////////////////////
-
-	file.NewSheet("PATH")
-
-	file.SetCellValue("PATH", "A1", "PATH")
-
-	if err := file.SetCellFormula("PATH", "B1", pathGetter.Formula); err != nil {
-		fmt.Println("RetCode: 400")
-		fmt.Println("Message: cannot convert into text")
-		fmt.Println("------------------------------------")
-		fmt.Println(err)
-		fmt.Println("------------------------------------")
-	}
-
-	if err := file.SaveAs(getUserInput.File_Path + getUserInput.File_Name + ".xlsx"); err != nil {
-		fmt.Println("RetCode: 400")
-		fmt.Println("Message: cannot save the  file")
-		fmt.Println("------------------------------------")
-		fmt.Println(err)
-		fmt.Println("------------------------------------")
-	}
-
-	dl := c.Download("Excelize.xlsx", "Excelize.xlsx")
-	fmt.Println("DOWNLOAD: ", dl)
-	cPath := c.Path("Excelize.xlsx", "Excelize.xlsx")
-	fmt.Println("PATH: ", cPath)
-
 	return c.JSON(response.ResponseModel{
 		RetCode: "200",
 		Message: "success",
@@ -210,19 +180,11 @@ func TransactionCount(c *fiber.Ctx) error {
 // @Produce		  		json
 // @Success		  		200 {object} response.GetCellValuePath
 // @Failure		  		400 {object} response.ResponseModel
-// @Router				/public/v1/transaction/get_path [get]
+// @Router				/public/v1/transaction/download_file [get]
 func GetPathFunc(c *fiber.Ctx) error {
 	gotPath := response.GetCellValuePath{}
 
-	// if parsErr := c.BodyParser(&gotPath); parsErr != nil {
-	// 	return c.JSON(response.ResponseModel{
-	// 		RetCode: "400",
-	// 		Message: "Bad request",
-	// 		Data:    parsErr.Error(),
-	// 	})
-	// }
-
-	f, err := excelize.OpenFile("Excelize.xlsx")
+	f, err := excelize.OpenFile("./files/Excelize.xlsx")
 	if err != nil {
 		fmt.Println("RetCode: 400")
 		fmt.Println("Message: cannot open file: ", gotPath)
@@ -241,38 +203,14 @@ func GetPathFunc(c *fiber.Ctx) error {
 		}
 	}()
 
-	getVal, err := f.GetCellValue("PATH", "B1")
-	if err != nil {
-		fmt.Println("RetCode: 400")
-		fmt.Println("Message: cannot get the cell value: PATH")
-		fmt.Println("------------------------------------")
-		fmt.Println(err)
-		fmt.Println("------------------------------------")
-	}
-
-	fmt.Println("CELL VALUE: ", getVal)
-
-	if fetchErr := database.DBConn.Debug().Raw("INSERT INTO public.file_path (file_name) VALUES (?)", getVal).Scan(&gotPath).Error; fetchErr != nil {
-		return c.JSON(response.ResponseModel{
-			RetCode: "400",
-			Message: "can't inser into table",
-			Data:    fetchErr,
-		})
-	}
-
 	// sample link: "http://www.africau.edu/images/default/sample.pdf
 	// fmt.Println("DOWNLOAD: ", dl)
-
-	///////////////////////////////////
-	///      F I L E   P A T H     ///
-	/////////////////////////////////
 
 	//////////////////////////////////
 	///       D O W N L O A D     ///
 	////////////////////////////////
 
-	// response, err := http.Get("www.africau.edu/images/default/sample.pdf")
-	response, err := http.Get("https://raw.githubusercontent.com/fdsap-Dan-P/Excelize-TRN-API/master/Excelize.xlsx")
+	response, err := http.Get("/files/Excelize.xlsx")
 	if err != nil {
 		return err
 	}
