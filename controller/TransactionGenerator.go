@@ -41,14 +41,6 @@ func TransactionCount(c *fiber.Ctx) error {
 		})
 	}
 
-	// if fetchErr := database.DBConn.Debug().Raw("SELECT formula FROM excel_formula WHERE formula_use = 'path_getter'").Scan(&pathGetter).Error; fetchErr != nil {
-	// 	return c.JSON(response.ResponseModel{
-	// 		RetCode: "400",
-	// 		Message: "can't fetch table",
-	// 		Data:    fetchErr,
-	// 	})
-	// }
-
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///                         E X C E L I Z E   -   S H E E T   1                        ///
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -56,11 +48,11 @@ func TransactionCount(c *fiber.Ctx) error {
 
 	StreamWritter, err := file.NewStreamWriter("Sheet1")
 	if err != nil {
-		fmt.Println("RetCode: 400")
-		fmt.Println("Message: Error")
-		fmt.Println("------------------------------------")
-		fmt.Println(err)
-		fmt.Println("------------------------------------")
+		return c.JSON(response.ResponseModel{
+			RetCode: "400",
+			Message: "Excelize: Stream Writter Error",
+			Data:    err.Error(),
+		})
 	}
 
 	styleID, err := file.NewStyle(&excelize.Style{
@@ -68,21 +60,21 @@ func TransactionCount(c *fiber.Ctx) error {
 		Fill:      excelize.Fill{Type: "pattern", Color: []string{"#DFEBF6"}, Pattern: 1},
 	})
 	if err != nil {
-		fmt.Println("RetCode: 400")
-		fmt.Println("Message: cannot set style")
-		fmt.Println("------------------------------------")
-		fmt.Println(err)
-		fmt.Println("------------------------------------")
+		return c.JSON(response.ResponseModel{
+			RetCode: "400",
+			Message: "Excelize: Style ID Error",
+			Data:    err.Error(),
+		})
 	}
 
 	if err := StreamWritter.SetRow("A1", []interface{}{
 		excelize.Cell{Value: "TRANSACTION REPORT", StyleID: styleID},
 	}, excelize.RowOpts{Height: 30, Hidden: false}); err != nil {
-		fmt.Println("RetCode: 400")
-		fmt.Println("Message: cannot set row")
-		fmt.Println("------------------------------------")
-		fmt.Println(err)
-		fmt.Println("------------------------------------")
+		return c.JSON(response.ResponseModel{
+			RetCode: "400",
+			Message: "Excelize: Top Row Error",
+			Data:    err.Error(),
+		})
 	}
 
 	header := []interface{}{}
@@ -94,11 +86,11 @@ func TransactionCount(c *fiber.Ctx) error {
 	}
 
 	if err := StreamWritter.SetRow("A2", header); err != nil {
-		fmt.Println("RetCode: 400")
-		fmt.Println("Message: cannot set row")
-		fmt.Println("------------------------------------")
-		fmt.Println(err)
-		fmt.Println("------------------------------------")
+		return c.JSON(response.ResponseModel{
+			RetCode: "400",
+			Message: "Excelize: Header Error",
+			Data:    err.Error(),
+		})
 	}
 
 	for rowID := 3; rowID < len(getTransactionResult)+3; rowID++ {
@@ -147,19 +139,19 @@ func TransactionCount(c *fiber.Ctx) error {
 	}
 
 	if err := StreamWritter.MergeCell("A1", "M1"); err != nil {
-		fmt.Println("RetCode: 400")
-		fmt.Println("Message: cannot merge cell")
-		fmt.Println("------------------------------------")
-		fmt.Println(err)
-		fmt.Println("------------------------------------")
+		return c.JSON(response.ResponseModel{
+			RetCode: "400",
+			Message: "Excelize: Merging Cells Error",
+			Data:    err.Error(),
+		})
 	}
 
 	if err := StreamWritter.Flush(); err != nil {
-		fmt.Println("RetCode: 400")
-		fmt.Println("Message: Error")
-		fmt.Println("------------------------------------")
-		fmt.Println(err)
-		fmt.Println("------------------------------------")
+		return c.JSON(response.ResponseModel{
+			RetCode: "400",
+			Message: "Excelize: Flush Error",
+			Data:    err.Error(),
+		})
 	}
 
 	return c.JSON(response.ResponseModel{
@@ -180,23 +172,23 @@ func TransactionCount(c *fiber.Ctx) error {
 // @Produce		  		json
 // @Success		  		200 {object} response.GetCellValuePath
 // @Failure		  		400 {object} response.ResponseModel
-// @Router				/public/v1/transaction/download_file [get]
+// @Router				/public/v1/transaction/download_file [post]
 func GetPathFunc(c *fiber.Ctx) error {
-	gotPath := response.GetCellValuePath{}
+	fileName := request.FileToDownload{}
 
-	f, err := excelize.OpenFile("./files/Excelize.xlsx")
+	f, err := excelize.OpenFile("./files/" + fileName.FileName)
 	if err != nil {
-		fmt.Println("RetCode: 400")
-		fmt.Println("Message: cannot open file: ", gotPath)
-		fmt.Println("------------------------------------")
-		fmt.Println(err)
-		fmt.Println("------------------------------------")
+		return c.JSON(response.ResponseModel{
+			RetCode: "400",
+			Message: "Excelize: Opening File Error",
+			Data:    err.Error(),
+		})
 	}
 
 	defer func() {
 		if err := f.Close(); err != nil {
 			fmt.Println("RetCode: 400")
-			fmt.Println("Message: cannot close file: ", gotPath)
+			fmt.Println("Message: cannot close file: ./files")
 			fmt.Println("------------------------------------")
 			fmt.Println(err)
 			fmt.Println("------------------------------------")
@@ -212,7 +204,12 @@ func GetPathFunc(c *fiber.Ctx) error {
 
 	response, err := http.Get("/files/Excelize.xlsx")
 	if err != nil {
-		return err
+		// return c.JSON(err)
+		fmt.Println("RetCode: 400")
+		fmt.Println("Message: cannot get file")
+		fmt.Println("------------------------------------")
+		fmt.Println(err)
+		fmt.Println("------------------------------------")
 	}
 
 	defer response.Body.Close()
@@ -220,7 +217,12 @@ func GetPathFunc(c *fiber.Ctx) error {
 	file, err := os.Create("newXLSX.xlsx")
 
 	if err != nil {
-		return err
+		// return c.JSON(err)
+		fmt.Println("RetCode: 400")
+		fmt.Println("Message: cannot download the file")
+		fmt.Println("------------------------------------")
+		fmt.Println(err)
+		fmt.Println("------------------------------------")
 	}
 
 	defer file.Close()
@@ -228,8 +230,13 @@ func GetPathFunc(c *fiber.Ctx) error {
 	_, err = io.Copy(file, response.Body)
 
 	if err != nil {
-		return err
+		// return c.JSON(err)
+		fmt.Println("RetCode: 400")
+		fmt.Println("Message: cannot get file data")
+		fmt.Println("------------------------------------")
+		fmt.Println(err)
+		fmt.Println("------------------------------------")
 	}
 
-	return c.JSON(gotPath)
+	return c.JSON(fileName)
 }
