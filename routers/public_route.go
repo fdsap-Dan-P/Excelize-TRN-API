@@ -39,7 +39,7 @@ func SetupPublicRoutes(app *fiber.App) {
 	//JANUS TRANSACTION REPORT
 	TransactionReport := v1Endpoint.Group("transaction")
 	TransactionReport.Post("fetch_transaction", controller.TransactionCount)
-	TransactionReport.Get("download_file", controller.GetPathFunc)
+	TransactionReport.Post("download_file", controller.GetPathFunc)
 
 	//CREDENTIALS
 	Credentials := v1Endpoint.Group("credentials")
