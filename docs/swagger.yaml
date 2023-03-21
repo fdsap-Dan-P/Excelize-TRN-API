@@ -122,6 +122,23 @@ info:
   title: Fiber Example API
   version: "1.0"
 paths:
+  /public/v1/credentials/register_sign_up:
+    get:
+      description: Encoding/Decoding Credentials
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TransactionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      summary: CREDENTIAL Base64
+      tags:
+      - JANUS REPORT GENERATION
   /public/v1/dashboard/dashboardMenu:
     post:
       consumes:
@@ -219,6 +236,23 @@ paths:
       summary: API FOR SPLASH SCREEN
       tags:
       - kPLUS UPON OPEN
+  /public/v1/transaction/download_file:
+    get:
+      description: Excel File Path Getter To Save into the Database when it was Downloaded
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetCellValuePath'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      summary: API TRANSACTION GENERATION FILE PATH GETTER
+      tags:
+      - JANUS REPORT GENERATION
   /public/v1/transaction/fetch_transaction:
     post:
       description: Provides Excel File Report of Transaction in a certain range of
@@ -235,23 +269,6 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseModel'
       summary: API TRANSACTION GENERATION
-      tags:
-      - JANUS REPORT GENERATION
-  /public/v1/transaction/get_path:
-    get:
-      description: Excel File Path Getter To Save into the Database when it was Downloaded
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetCellValuePath'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ResponseModel'
-      summary: API TRANSACTION GENERATION FILE PATH GETTER
       tags:
       - JANUS REPORT GENERATION
 swagger: "2.0"

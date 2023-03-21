@@ -18,6 +18,32 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/public/v1/credentials/register_sign_up": {
+            "get": {
+                "description": "Encoding/Decoding Credentials",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "JANUS REPORT GENERATION"
+                ],
+                "summary": "CREDENTIAL Base64",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.TransactionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    }
+                }
+            }
+        },
         "/public/v1/dashboard/dashboardMenu": {
             "post": {
                 "description": "Provide the menu to show in kPLUS",
@@ -162,6 +188,32 @@ const docTemplate = `{
                 }
             }
         },
+        "/public/v1/transaction/download_file": {
+            "get": {
+                "description": "Excel File Path Getter To Save into the Database when it was Downloaded",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "JANUS REPORT GENERATION"
+                ],
+                "summary": "API TRANSACTION GENERATION FILE PATH GETTER",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetCellValuePath"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    }
+                }
+            }
+        },
         "/public/v1/transaction/fetch_transaction": {
             "post": {
                 "description": "Provides Excel File Report of Transaction in a certain range of date",
@@ -177,32 +229,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.TransactionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseModel"
-                        }
-                    }
-                }
-            }
-        },
-        "/public/v1/transaction/get_path": {
-            "get": {
-                "description": "Excel File Path Getter To Save into the Database when it was Downloaded",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "JANUS REPORT GENERATION"
-                ],
-                "summary": "API TRANSACTION GENERATION FILE PATH GETTER",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetCellValuePath"
                         }
                     },
                     "400": {
