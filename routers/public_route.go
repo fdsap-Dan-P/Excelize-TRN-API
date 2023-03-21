@@ -43,5 +43,5 @@ func SetupPublicRoutes(app *fiber.App) {
 
 	//CREDENTIALS
 	Credentials := v1Endpoint.Group("credentials")
-	Credentials.Get("register_sign_up", controller.Registered)
+	Credentials.Post("register_sign_up", controller.Registered)
 }
