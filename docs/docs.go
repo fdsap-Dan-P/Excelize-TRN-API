@@ -18,21 +18,47 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/public/v1/credentials/register_sign_up": {
-            "get": {
-                "description": "Encoding/Decoding Credentials",
+        "/public/v1/credentials/log_in": {
+            "post": {
+                "description": "Encoding/Decoding/Hashing Credentials",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "JANUS REPORT GENERATION"
                 ],
-                "summary": "CREDENTIAL Base64",
+                "summary": "CREDENTIAL Base64/md5 hashing",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.TransactionResponse"
+                            "$ref": "#/definitions/request.RegisteredRequest"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/public/v1/credentials/register_sign_up": {
+            "post": {
+                "description": "Encoding/Decoding/Hashing Credentials",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "JANUS REPORT GENERATION"
+                ],
+                "summary": "CREDENTIAL Base64/md5 hashing",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.LogInResponse"
                         }
                     },
                     "400": {
@@ -189,7 +215,7 @@ const docTemplate = `{
             }
         },
         "/public/v1/transaction/download_file": {
-            "get": {
+            "post": {
                 "description": "Excel File Path Getter To Save into the Database when it was Downloaded",
                 "produces": [
                     "application/json"
@@ -248,6 +274,23 @@ const docTemplate = `{
                 "insti_code": {
                     "type": "integer",
                     "example": 100
+                }
+            }
+        },
+        "request.RegisteredRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "retype_password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -318,6 +361,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "telephone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.LogInResponse": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

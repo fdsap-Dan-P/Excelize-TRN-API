@@ -6,6 +6,17 @@ definitions:
         example: 100
         type: integer
     type: object
+  request.RegisteredRequest:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      retype_password:
+        type: string
+      username:
+        type: string
+    type: object
   response.DashboardMenuResponse:
     properties:
       dashboard:
@@ -50,6 +61,13 @@ definitions:
       institution:
         type: string
       telephone_number:
+        type: string
+    type: object
+  response.LogInResponse:
+    properties:
+      name:
+        type: string
+      username:
         type: string
     type: object
   response.ResponseModel:
@@ -122,21 +140,38 @@ info:
   title: Fiber Example API
   version: "1.0"
 paths:
-  /public/v1/credentials/register_sign_up:
-    get:
-      description: Encoding/Decoding Credentials
+  /public/v1/credentials/log_in:
+    post:
+      description: Encoding/Decoding/Hashing Credentials
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.TransactionResponse'
+            $ref: '#/definitions/request.RegisteredRequest'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ResponseModel'
-      summary: CREDENTIAL Base64
+      summary: CREDENTIAL Base64/md5 hashing
+      tags:
+      - JANUS REPORT GENERATION
+  /public/v1/credentials/register_sign_up:
+    post:
+      description: Encoding/Decoding/Hashing Credentials
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.LogInResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      summary: CREDENTIAL Base64/md5 hashing
       tags:
       - JANUS REPORT GENERATION
   /public/v1/dashboard/dashboardMenu:
@@ -237,7 +272,7 @@ paths:
       tags:
       - kPLUS UPON OPEN
   /public/v1/transaction/download_file:
-    get:
+    post:
       description: Excel File Path Getter To Save into the Database when it was Downloaded
       produces:
       - application/json
