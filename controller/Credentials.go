@@ -17,7 +17,7 @@ import (
 // @Description	  		Encoding/Decoding/Hashing Credentials
 // @Tags		  		JANUS REPORT GENERATION
 // @Produce		  		json
-// @Success		  		200 {object} response.RegisteredRequest
+// @Success		  		200 {object} request.RegisteredRequest
 // @Failure		  		400 {object} response.ResponseModel
 // @Router				/public/v1/credentials/log_in [post]
 func Registered(c *fiber.Ctx) error {
