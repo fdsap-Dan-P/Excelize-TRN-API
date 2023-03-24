@@ -5,6 +5,8 @@ import (
 	"APITransactionGenerator/struct/request"
 	"APITransactionGenerator/struct/response"
 	"crypto/md5"
+	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
@@ -19,7 +21,7 @@ import (
 // @Produce		  		json
 // @Success		  		200 {object} request.RegisteredRequest
 // @Failure		  		400 {object} response.ResponseModel
-// @Router				/public/v1/credentials/log_in [post]
+// @Router				/public/v1/credentials/register_sign_up [post]
 func Registered(c *fiber.Ctx) error {
 	UserCredentials := request.RegisteredRequest{}
 	NewRegistered := request.RegisteredRequest{}
@@ -31,20 +33,36 @@ func Registered(c *fiber.Ctx) error {
 			Data:    parsErr.Error(),
 		})
 	}
-	message := "1030108389"
+
+	//------------------ TESTING AREA ------------------//
+	//BASE 64 ENCRYPT
+	message := "Hello"
 	base64Text := base64.StdEncoding.EncodeToString([]byte(message))
 	fmt.Println("base64: ", base64Text)
 
+	//BASE 64 DECRYPT
 	originalText, err := base64.StdEncoding.DecodeString(base64Text)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println("origial text: ", string(originalText))
 
-	data := []byte("hello")
-	byte16 := md5.Sum(data)
+	//MD5 HASHING
+	messageMD5 := []byte(message)
+	byte16 := md5.Sum(messageMD5)
 	pass := hex.EncodeToString(byte16[:])
 	fmt.Println("HASH: ", string(pass))
+
+	//SHA1 HASHING
+	messageSHA1 := sha1.Sum([]byte(message))
+	sha1Pass := hex.EncodeToString(messageSHA1[:])
+	fmt.Println("SHA1:", string(sha1Pass))
+
+	//SHA256 HASHING
+	messageSHA256 := sha256.Sum256([]byte(message))
+	messageSha1Pass := hex.EncodeToString(messageSHA256[:])
+	fmt.Println("SHA256:", string(messageSha1Pass))
+	//--------------------- END ---------------------//
 
 	//check if passwords are similar before it saves
 	if UserCredentials.Password == UserCredentials.Retype_password {
@@ -75,7 +93,7 @@ func Registered(c *fiber.Ctx) error {
 // @Produce		  		json
 // @Success		  		200 {object} response.LogInResponse
 // @Failure		  		400 {object} response.ResponseModel
-// @Router				/public/v1/credentials/register_sign_up [post]
+// @Router				/public/v1/credentials/log_in [post]
 func Log_in(c *fiber.Ctx) error {
 	userCredentials := request.LogInRequest{}
 	ClientInfo := response.LogInResponse{}
