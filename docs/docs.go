@@ -32,7 +32,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/request.RegisteredRequest"
+                            "$ref": "#/definitions/response.LogInResponse"
                         }
                     },
                     "400": {
@@ -58,7 +58,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.LogInResponse"
+                            "$ref": "#/definitions/request.RegisteredRequest"
                         }
                     },
                     "400": {
