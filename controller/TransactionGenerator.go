@@ -154,6 +154,8 @@ func TransactionCount(c *fiber.Ctx) error {
 		})
 	}
 
+	file.SaveAs("./files/" + getUserInput.File_Name)
+
 	return c.JSON(response.ResponseModel{
 		RetCode: "200",
 		Message: "success",
@@ -202,7 +204,7 @@ func GetPathFunc(c *fiber.Ctx) error {
 	///       D O W N L O A D     ///
 	////////////////////////////////
 
-	response, err := http.Get("/files/Excelize.xlsx")
+	response, err := http.Get("/files/")
 	if err != nil {
 		// return c.JSON(err)
 		fmt.Println("RetCode: 400")
