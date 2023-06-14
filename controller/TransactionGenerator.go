@@ -204,7 +204,7 @@ func GetPathFunc(c *fiber.Ctx) error {
 	///       D O W N L O A D     ///
 	////////////////////////////////
 
-	response, err := http.Get("/files/")
+	response, err := http.Get("/files/" + fileName.FileName)
 	if err != nil {
 		// return c.JSON(err)
 		fmt.Println("RetCode: 400")
