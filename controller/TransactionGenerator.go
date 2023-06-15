@@ -262,14 +262,10 @@ func GetPathFunc(c *fiber.Ctx) error {
 func DownloadHandler(c *fiber.Ctx) error {
 	filename := c.Params("filename")
 
-	fmt.Println("PARAMS: ", filename)
-
 	filePath, err := filepath.Abs("./files/" + filename)
 	if err != nil {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
-
-	fmt.Println("abs file: ", filePath)
 
 	// Set the appropriate headers for the response
 	c.Set(fiber.HeaderContentType, "application/octet-stream")
