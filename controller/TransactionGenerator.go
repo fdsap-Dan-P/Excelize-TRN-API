@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/xuri/excelize/v2"
@@ -178,24 +179,26 @@ func TransactionCount(c *fiber.Ctx) error {
 func GetPathFunc(c *fiber.Ctx) error {
 	fileName := request.FileToDownload{}
 
-	f, err := excelize.OpenFile("./files/" + fileName.FileName)
-	if err != nil {
-		return c.JSON(response.ResponseModel{
-			RetCode: "400",
-			Message: "Excelize: Opening File Error",
-			Data:    err.Error(),
-		})
+	fmt.Println("FILE DIR: " + "./files/" + fileName.FileName)
+
+	if parsErr := c.BodyParser(&fileName); parsErr != nil {
+		fmt.Println("RetCode: 400")
+		fmt.Println("Message: Body Parse Error")
+		fmt.Println("------------------------------------")
+		fmt.Println(parsErr)
+		fmt.Println("------------------------------------")
 	}
 
-	defer func() {
-		if err := f.Close(); err != nil {
-			fmt.Println("RetCode: 400")
-			fmt.Println("Message: cannot close file: ./files")
-			fmt.Println("------------------------------------")
-			fmt.Println(err)
-			fmt.Println("------------------------------------")
-		}
-	}()
+	absolutePath, err := filepath.Abs(fileName.FileName)
+	if err != nil {
+		fmt.Println("RetCode: 400")
+		fmt.Println("Message: Cannot get absolute path")
+		fmt.Println("------------------------------------")
+		fmt.Println(err)
+		fmt.Println("------------------------------------")
+	}
+
+	fmt.Println("ABSOLUTE PATH: ", absolutePath)
 
 	// sample link: "http://www.africau.edu/images/default/sample.pdf
 	// fmt.Println("DOWNLOAD: ", dl)
@@ -204,7 +207,8 @@ func GetPathFunc(c *fiber.Ctx) error {
 	///       D O W N L O A D     ///
 	////////////////////////////////
 
-	response, err := http.Get("/files/" + fileName.FileName)
+	response, err := http.Get(absolutePath)
+	// response, err := http.Get("http://www.africau.edu/images/default/sample.pdf")
 	if err != nil {
 		// return c.JSON(err)
 		fmt.Println("RetCode: 400")
@@ -216,7 +220,7 @@ func GetPathFunc(c *fiber.Ctx) error {
 
 	defer response.Body.Close()
 
-	file, err := os.Create("newXLSX.xlsx")
+	file, err := os.Create(fileName.FileName)
 
 	if err != nil {
 		// return c.JSON(err)
@@ -240,5 +244,45 @@ func GetPathFunc(c *fiber.Ctx) error {
 		fmt.Println("------------------------------------")
 	}
 
-	return c.JSON(fileName)
+	return nil
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///                    G  E  T    P  A  T  H    F  U  N  C  T  I  O  N                       ///
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+// Developer			Roldan
+// @summary 	  		API TRANSACTION GENERATION FILE PATH GETTER
+// @Description	  		Excel File Path Getter To Save into the Database when it was Downloaded
+// @Tags		  		JANUS REPORT GENERATION
+// @Produce		  		json
+// @Success		  		200 {object} response.GetCellValuePath
+// @Failure		  		400 {object} response.ResponseModel
+// @Router				/public/v1/transaction/download_file [post]
+func DownloadHandler(c *fiber.Ctx) error {
+	filePath, err := filepath.Abs("./files/Excelize.xlsx")
+	if err != nil {
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	fmt.Println("abs file: ", filePath)
+
+	// Set the appropriate headers for the response
+	c.Set(fiber.HeaderContentType, "application/octet-stream")
+	c.Set(fiber.HeaderContentDisposition, "attachment; filename=excelfile_download_3.xlsx")
+
+	// Open the generated Excel file
+	file, err := os.Open(filePath)
+	if err != nil {
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+	defer file.Close()
+
+	// Stream the file to the response
+	_, err = io.Copy(c, file)
+	if err != nil {
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	return nil
 }
