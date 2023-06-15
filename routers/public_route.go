@@ -40,7 +40,7 @@ func SetupPublicRoutes(app *fiber.App) {
 	TransactionReport := v1Endpoint.Group("transaction")
 	TransactionReport.Post("fetch_transaction", controller.TransactionCount)
 	TransactionReport.Post("download_file", controller.GetPathFunc)
-	TransactionReport.Get("download", controller.DownloadHandler)
+	TransactionReport.Get("/download/:filename", controller.DownloadHandler)
 
 	//CREDENTIALS
 	Credentials := v1Endpoint.Group("credentials")

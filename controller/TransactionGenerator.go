@@ -260,7 +260,11 @@ func GetPathFunc(c *fiber.Ctx) error {
 // @Failure		  		400 {object} response.ResponseModel
 // @Router				/public/v1/transaction/download_file [post]
 func DownloadHandler(c *fiber.Ctx) error {
-	filePath, err := filepath.Abs("./files/Excelize.xlsx")
+	filename := c.Params("filename")
+
+	fmt.Println("PARAMS: ", filename)
+
+	filePath, err := filepath.Abs("./files/" + filename)
 	if err != nil {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
@@ -269,7 +273,7 @@ func DownloadHandler(c *fiber.Ctx) error {
 
 	// Set the appropriate headers for the response
 	c.Set(fiber.HeaderContentType, "application/octet-stream")
-	c.Set(fiber.HeaderContentDisposition, "attachment; filename=excelfile_download_3.xlsx")
+	c.Set(fiber.HeaderContentDisposition, "attachment; filename="+filename)
 
 	// Open the generated Excel file
 	file, err := os.Open(filePath)
